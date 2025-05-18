@@ -44,8 +44,8 @@ function [x,meta] = linear_solver(A,b,tol)
     meta.rank = r;
     meta.tol  = tol;
 
-    % Orthogonal projector onto R(A)⊥ to test consistency
-    consistent = norm((eye(m) - A*pinv(A))*b) < tol;
+    % Orthogonal projector onto R(A)⊥ to test consistency using same tolerance
+    consistent = norm((eye(m) - A*pinv(A, tol))*b) < tol;
 
     if m == n && r == n                 % Case 1(i)
         meta.case = 'square';
@@ -64,7 +64,7 @@ function [x,meta] = linear_solver(A,b,tol)
 
     else                               % Case 2(ii) – rank deficient
         meta.case = 'rank‑deficient';
-        x = pinv(A)*b;                 % Moore–Penrose pseudoinverse
+        x = pinv(A, tol)*b;            % Moore–Penrose pseudoinverse using same tolerance
         if consistent
             meta.solution_type = 'minimal‑norm solution (consistent)';
         else
